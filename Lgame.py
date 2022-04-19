@@ -41,12 +41,56 @@ class Lgame:
     def get_players(self):
         return self.l_pieces
 
-    def move_n(self,old_pos,new_pos,symbol):
+    def get_n_pieces(self):
+        return self.n_pieces
+
+    def _square_exists(self,x,y):
+        if x >= 0 and x < self.x and y >= 0 and y < self.y:
+            return True
+        return False
+
+    def move_n(self,old_pos,new_pos,symbol,remove_old_pos=True):
         old_x,old_y = old_pos
         new_x,new_y = new_pos
 
-        self.state[old_x,old_y] = 0
-        self.state[new_x,new_y] = symbol
+        # Making sure the position is legal
+        if self._square_exists(new_x,new_y):
+            # Emptying the old square
+            if remove_old_pos:
+                self.state[old_x,old_y] = 0
+            # Filling the new square
+            self.state[new_x,new_y] = symbol
+
+            return True
+
+        return False
+
+    def _squares_are_free(self,squares,piece_symbol):
+        for sq in squares:
+            symbol = self.state[sq[0],sq[1]]
+            if (symbol != piece_symbol and symbol != 0):
+                return False
+        return True
+
+    def move_l(self,old_pos,new_pos,symbol,remove_old_pos=True):
+        # Making sure the position is legal
+        if self._is_l_shaped(new_pos) and self._squares_are_free(new_pos,symbol):
+            # Emptying the old squares
+            if remove_old_pos:
+                for pos in old_pos:
+                    old_x,old_y = pos
+                    self.state[old_x,old_y] = 0
+
+            # Filling the new squares
+            for pos in new_pos:
+                new_x,new_y = pos
+                if not self._square_exists(new_x,new_y):
+                    return False #TODO
+                self.state[new_x,new_y] = symbol
+
+            return True
+
+        return False
 
     def reset(self):
         # Resetting state to 0's
@@ -54,16 +98,16 @@ class Lgame:
 
         # Placing player pieces
         for i in range(len(self.l_pieces)):
-            self.l_pieces[i].move(self.l_pos_init[i])
+            self.l_pieces[i].move(self.l_pos_init[i],None,False)
 
         # Placing neutral pieces
         for i in range(len(self.n_pieces)):
-            self.n_pieces[i].move(self.n_pos_init[i])
+            self.n_pieces[i].move(self.n_pos_init[i],False)
 
         return self.state_to_id(self.state), 0, False, "Reset"
 
     def __str__(self):
-        return self.state
+        return str(self.state)
 
     def get_state(self):
         return self.state

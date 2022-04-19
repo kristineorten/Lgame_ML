@@ -45,7 +45,7 @@ def test_l1_move():
     assert state_id == new_state_id
     assert reward == -1
     assert termination == False
-    assert msgs == "Moved"
+    assert msgs == "L-piece moved"
 
 def test_l2_and_n_move():
     # The correct new state id
@@ -64,7 +64,7 @@ def test_l2_and_n_move():
     assert state_id == new_state_id
     assert reward == -1
     assert termination == False
-    assert msgs == "Moved"
+    assert msgs == "L-piece moved, N-piece moved"
 
 def test_reset():
     reset_state = np.array([

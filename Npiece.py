@@ -19,7 +19,7 @@ class Npiece(GamePiece):
 
         super().__init__(id,game,symbol,position,unicode)
 
-    def move(self,new_pos):
+    def move(self,new_pos,remove_old_pos=True):
         """
         Params:
             new_pos (numpy.ndarray): The new squares the piece should occupy
@@ -28,7 +28,11 @@ class Npiece(GamePiece):
         # Updating the game board
         old_pos = self.get_pos()
         symbol = self.to_symbol()
-        self.get_game().move_n(old_pos,new_pos,symbol)
+        board_updated = self.get_game().move_n(old_pos,new_pos,symbol,remove_old_pos)
 
         # Updating the piece position
-        self.set_pos(new_pos)
+        if board_updated:
+            self.set_pos(new_pos)
+            return True
+
+        return False
