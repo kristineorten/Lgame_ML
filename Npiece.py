@@ -1,6 +1,7 @@
 from GamePiece import GamePiece
 
 class Npiece(GamePiece):
+    # Counting the number of N-pieces
     class_counter = 0
 
     def __init__(self,game,symbol,position,unicode="\u272A"):
