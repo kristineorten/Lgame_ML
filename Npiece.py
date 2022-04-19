@@ -28,7 +28,7 @@ class Npiece(GamePiece):
         # Updating the game board
         old_pos = self.get_pos()
         symbol = self.to_symbol()
-        self.game.move_n(old_pos,new_pos,symbol)
+        self.get_game().move_n(old_pos,new_pos,symbol)
 
         # Updating the piece position
         self.set_pos(new_pos)
