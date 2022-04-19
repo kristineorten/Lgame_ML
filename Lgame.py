@@ -41,6 +41,13 @@ class Lgame:
     def get_players(self):
         return self.l_pieces
 
+    def move_n(self,old_pos,new_pos,symbol):
+        old_x,old_y = old_pos
+        new_x,new_y = new_pos
+
+        self.state[old_x,old_y] = 0
+        self.state[new_x,new_y] = symbol
+
     def reset(self):
         # Resetting state to 0's
         self.state = np.zeros((self.x,self.y))
