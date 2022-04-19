@@ -14,11 +14,12 @@ Training an AI for the L-game app (proof of concept and playing around with ML).
 ### Tests
 - File: Lgame_test.py
 - Run with `pytest`
+
 Information about pytest: https://docs.pytest.org/en/7.1.x/getting-started.html
 
 ## Classes
 ### The pieces
-- Files: Lpiece.py, Npieces.py, GamePieces.py
+- Files: Lpiece.py, Npiece.py, GamePiece.py
 ### The game board
 - File: Lgame.py
 
