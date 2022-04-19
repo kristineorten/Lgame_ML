@@ -66,3 +66,10 @@ class GamePiece:
         Changing the position of the piece
         """
         self.position = new_pos
+
+    def get_game(self):
+        """
+        Returns:
+            game (Lgame.Lgame): The game-object which the piece belongs to
+        """
+        return self.game
