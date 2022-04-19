@@ -3,7 +3,7 @@ class GamePiece:
         """
         Params:
             id (int): id (relative to subclass)
-            game (Lgame): The game-object which the piece belongs to
+            game (Lgame.Lgame): The game-object which the piece belongs to
             symbol (int): Symbol (0-9) for numeric representation
             position (numpy.ndarray): Squares occupied on the game board
             unicode (string): Symbol for unicode representation

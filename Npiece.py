@@ -3,17 +3,31 @@ from GamePiece import GamePiece
 class Npiece(GamePiece):
     class_counter = 0
 
-    def __init__(self,game,sym,pos,unicode="\u272A"):
+    def __init__(self,game,symbol,position,unicode="\u272A"):
+        """
+        Params:
+            game (Lgame.Lgame): The game-object which the piece belongs to
+            symbol (int): Symbol (0-9) for numeric representation
+            position (numpy.ndarray): Squares occupied on the game board
+            unicode (string): Symbol for unicode representation
+        """
+
+        # Setting the id of the piece
         id = Npiece.class_counter
         Npiece.class_counter += 1
 
-        super().__init__(id,game,sym,pos,unicode)
+        super().__init__(id,game,symbol,position,unicode)
 
     def move(self,new_pos):
-        old_x,old_y = self.get_pos()
-        new_x,new_y = new_pos
+        """
+        Params:
+            new_pos (numpy.ndarray): The new squares the piece should occupy
+        """
 
-        self.game.state[old_x,old_y] = 0
-        self.game.state[new_x,new_y] = self.to_symbol()
+        # Updating the game board
+        old_pos = self.get_pos()
+        symbol = self.to_symbol()
+        self.game.move_n(old_pos,new_pos,symbol)
 
+        # Updating the piece position
         self.set_pos(new_pos)
