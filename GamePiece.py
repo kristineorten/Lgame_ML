@@ -3,10 +3,10 @@ class GamePiece:
         """
         Params:
             id (int): id (relative to subclass)
-            game (Lgame): the game-object which the piece belongs to
-            symbol (int): symbol (0-9) for numeric representation
-            position (ndarray): squares occupied on the game board
-            unicode (string): symbol for unicode representation
+            game (Lgame): The game-object which the piece belongs to
+            symbol (int): Symbol (0-9) for numeric representation
+            position (numpy.ndarray): Squares occupied on the game board
+            unicode (string): Symbol for unicode representation
         """
         self.id = id
         self.symbol = symbol
@@ -15,25 +15,54 @@ class GamePiece:
         self.game = game
 
     def get_id(self):
+        """
+        Returns:
+            self.id (int): The id of the piece
+        """
         return self.id
 
     def __str__(self):
-        return self.symbol
+        """
+        Returns:
+            self.symbol (str): The piece symbol in string format
+        """
+        return str(self.symbol)
 
     def to_symbol(self):
+        """
+        Returns:
+            self.symbol (int): The piece symbol
+        """
         return self.symbol
 
     def to_unicode(self):
+        """
+        Returns:
+            self.unicode (str): The piece unicode symbol
+        """
         return self.unicode
 
     def print_symbol(self):
-        print(self.to_symbol())
+        """
+        Prints the piece symbol
+        """
+        print(self.symbol)
 
     def print_unicode(self):
-        print(self.to_unicode())
+        """
+        Prints the piece unicode symbol
+        """
+        print(self.unicode)
 
     def get_pos(self):
+        """
+        Returns:
+            self.position (numpy.ndarray): The squares the piece occupies
+        """
         return self.position
 
     def set_pos(self,new_pos):
+        """
+        Changing the position of the piece
+        """
         self.position = new_pos
