@@ -48,9 +48,8 @@ class Lpiece(GamePiece):
 
                 # Finding the correct N-piece object
                 for n in self.get_game().get_n_pieces():
-                    n_pos = n.get_pos()
-                    # Note: Assumes sorted postions
-                    if n_pos[0] == old_n_pos[0] and n_pos[1] == old_n_pos[1]:
+                    actual_n_pos = n.get_pos()
+                    if actual_n_pos[0] == old_n_pos[0] and actual_n_pos[1] == old_n_pos[1]:
                         n_piece = n
 
                 moved_n_piece = n_piece.move(new_n_pos,remove_old_pos)
