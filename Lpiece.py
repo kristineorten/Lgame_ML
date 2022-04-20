@@ -19,6 +19,9 @@ class Lpiece(GamePiece):
 
         super().__init__(id,game,symbol,position,unicode)
 
+        # Moving piece to initial position
+        self.move(position,None,False)
+
     def move(self,new_pos,n_pos=None,remove_old_pos=True):
         """
         Params:
@@ -27,14 +30,13 @@ class Lpiece(GamePiece):
             remove_old_pos (bool): If the old position should be overwritten with 0's or not
 
         Returns:
-            state_id (int): The id of the state the board is in after moving
+            state_id (str): The id of the state the board is in after moving
             reward (int): The reward for the movement
             termination (bool): If the goal is reached or not
             msgs (str): Information about the action taken
         """
 
         # Default values
-        state_id = self.get_game().state_to_id()
         reward = -1
         termination = False
         msgs = "Illegal move"
@@ -74,5 +76,8 @@ class Lpiece(GamePiece):
             elif False: #lost:
                 reward = -100
                 msgs = "Lost"
+
+        # The state id after the moving is done
+        state_id = self.get_game().state_to_id()
 
         return state_id, reward, termination, msgs

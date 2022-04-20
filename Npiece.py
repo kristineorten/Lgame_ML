@@ -19,6 +19,9 @@ class Npiece(GamePiece):
 
         super().__init__(id,game,symbol,position,unicode)
 
+        # Moving piece to initial position
+        self.move(position,False)
+
     def move(self,new_pos,remove_old_pos=True):
         """
         Params:
