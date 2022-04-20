@@ -23,6 +23,7 @@ class Npiece(GamePiece):
         """
         Params:
             new_pos (numpy.ndarray): The new squares the piece should occupy
+            remove_old_pos (bool): If the old position should be overwritten with 0's or not
         """
 
         # Updating the game board

@@ -24,6 +24,7 @@ class Lpiece(GamePiece):
         Params:
             new_pos (numpy.ndarray): The new squares the piece should occupy
             n_pos (numpy.ndarray, optional): Old and new position for the neutral piece
+            remove_old_pos (bool): If the old position should be overwritten with 0's or not
         """
 
         # Default values
