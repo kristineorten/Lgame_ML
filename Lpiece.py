@@ -25,9 +25,16 @@ class Lpiece(GamePiece):
             new_pos (numpy.ndarray): The new squares the piece should occupy
             n_pos (numpy.ndarray, optional): Old and new position for the neutral piece
             remove_old_pos (bool): If the old position should be overwritten with 0's or not
+
+        Returns:
+            state_id (int): The id of the state the board is in after moving
+            reward (int): The reward for the movement
+            termination (bool): If the goal is reached or not
+            msgs (str): Information about the action taken
         """
 
         # Default values
+        state_id = self.get_game().state_to_id()
         reward = -1
         termination = False
         msgs = "Illegal move"
@@ -68,4 +75,4 @@ class Lpiece(GamePiece):
                 reward = -100
                 msgs = "Lost"
 
-        return self.game.state_to_id(self.game.state), reward, termination, msgs
+        return state_id, reward, termination, msgs
