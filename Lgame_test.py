@@ -66,6 +66,25 @@ def test_l2_and_n_move():
     assert termination == False
     assert msgs == "L-piece moved, N-piece moved"
 
+def test_l1_move_and_illegal_n_move():
+    # The correct new state id
+    new_state = np.array([
+        [3,0,1,1],
+        [0,3,1,0],
+        [2,0,1,0],
+        [2,2,2,0]])
+    new_state_id = game.state_to_id(new_state)
+
+    # The actual state id after the move
+    new_move = np.array([[0,3],[0,2],[1,2],[2,2]])
+    n_pos = np.array([[0,0],[3,0]])
+    state_id, reward, termination, msgs = player1.move(new_move,n_pos)
+
+    assert state_id == new_state_id
+    assert reward == -1
+    assert termination == False
+    assert msgs == "L-piece moved, illegal N-move"
+
 def test_reset():
     reset_state = np.array([
         [3,1,1,0],

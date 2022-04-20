@@ -26,6 +26,12 @@ n_pos = np.array([[3,3],[1,1]])
 print(player2.move(new_move,n_pos))
 game.print_unicode()
 
+print("Illegal n-move")
+new_move = np.array([[0,3],[0,2],[1,2],[2,2]])
+n_pos = np.array([[0,0],[3,0]])
+print(player1.move(new_move,n_pos))
+game.print_unicode()
+
 print("Resetting the game")
 print(game.reset())
 game.print_unicode()

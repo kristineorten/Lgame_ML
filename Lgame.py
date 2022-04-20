@@ -82,7 +82,7 @@ class Lgame:
         new_x,new_y = new_pos
 
         # Making sure the position is legal
-        if self._square_exists(new_x,new_y):
+        if self._square_exists(new_x,new_y) and self._squares_are_free([new_pos]):
 
             # Emptying the old square
             if remove_old_pos:
@@ -267,13 +267,13 @@ class Lgame:
             return True
         return False
 
-    def _squares_are_free(self,squares,piece_symbol):
+    def _squares_are_free(self,squares,l_piece_symbol=0):
         """
         Checking if the squares supplied are possible to move to
 
         Params:
             squares (numpy.ndarray): The squares we want to check
-            piece_symbol (int): The symbol of the piece we want to move
+            l_piece_symbol (int): The symbol of the piece we want to move (if l-piece)
 
         Returns:
             (bool): Whether we can move to the squares or not
@@ -283,7 +283,7 @@ class Lgame:
             sq_symbol = self.state[sq[0],sq[1]]
 
             # The square is occupied
-            if (sq_symbol != piece_symbol and sq_symbol != self.symbol_empty_sq):
+            if (sq_symbol != l_piece_symbol and sq_symbol != self.symbol_empty_sq):
                 return False
 
         # All squares are free
