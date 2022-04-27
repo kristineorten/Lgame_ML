@@ -85,6 +85,35 @@ def test_l1_move_and_illegal_n_move():
     assert termination == False
     assert msgs == "L-piece moved, illegal N-move"
 
+def test_win():
+    win_state = np.array([
+        [0,0,3,0],
+        [1,1,1,0],
+        [2,0,1,0],
+        [2,2,2,3]])
+    win_state_id = game.state_to_id(win_state)
+
+    move1_l2 = np.array([[3,1],[3,2],[3,3],[2,3]])
+    move1_n = np.array([[1,1],[1,3]])
+
+    move2_l1 = np.array([[0,2],[0,1],[1,1],[2,1]])
+
+    move3_l2 = np.array([[2,0],[3,0],[3,1],[3,2]])
+    move3_n = np.array([[0,0],[3,3]])
+
+    move4_l1 = np.array([[1,0],[1,1],[1,2],[2,2]])
+    move4_n = np.array([[1,3],[0,2]])
+
+    player2.move(move1_l2,move1_n)
+    state_id, reward, termination, msgs = player1.move(move2_l1)
+    player2.move(move3_l2,move3_n)
+    state_id, reward, termination, msgs = player1.move(move4_l1,move4_n)
+
+    assert state_id == win_state_id
+    assert reward == 100
+    assert termination == True
+    assert msgs == "Won"
+
 def test_reset():
     reset_state = np.array([
         [3,1,1,0],
@@ -99,3 +128,28 @@ def test_reset():
     assert reward == 0
     assert termination == False
     assert msgs == "Reset"
+
+def test_loss():
+    loss_state = np.array([
+        [0,2,0,0],
+        [3,2,0,0],
+        [1,2,2,3],
+        [1,1,1,0]])
+    loss_state_id = game.state_to_id(loss_state)
+
+    move1_l1 = np.array([[0,2],[0,3],[1,3],[2,3]])
+    move2_l2 = np.array([[0,1],[1,1],[2,1],[2,2]])
+    move2_n = np.array([[0,0],[1,0]])
+    move3_l1 = np.array([[2,0],[3,0],[3,1],[3,2]])
+    move3_n = np.array([[3,3],[2,3]])
+
+    state_id, reward, termination, msgs = player1.move(move1_l1)
+    player2.move(move2_l2,move2_n)
+    state_id, reward, termination, msgs = player1.move(move3_l1,move3_n)
+
+    assert state_id == loss_state_id
+    assert reward == -100
+    assert termination == True
+    assert msgs == "Lost"
+
+#TODO: what about rewards when we lose/win on l2's turn?

@@ -17,6 +17,9 @@ class Lgame:
         # Game state
         self.state = np.zeros((self.x,self.y)).astype('int')
 
+        self._set_n_all_pos() #fills up self.n_all_pos
+        self._set_l_all_pos() #fills up self.l_all_pos
+
         # Neutral pieces (N)
         self.n_pieces = np.array([None]*nr_of_n_pieces)
         self.n_pos_init = np.array([[0,0],[3,3]])
@@ -32,9 +35,6 @@ class Lgame:
         self.l_pos_init[1] = np.array([[1,1],[2,1],[3,1],[3,2]])
         self.l_pieces[0] = Lpiece(self,1,self.l_pos_init[0],"\u25A1")
         self.l_pieces[1] = Lpiece(self,2,self.l_pos_init[1],"\u25A0")
-
-        self._find_all_n_pos() #fills up self.n_all_pos
-        self._find_all_l_pos() #fills up self.l_all_pos
 
     def __str__(self):
         """
@@ -154,6 +154,23 @@ class Lgame:
         state_id = self.state_to_id()
 
         return state_id, 0, False, "Reset"
+
+    def has_lost(self,l_sym): #TODO
+        l_positions = self._find_available_l_pos(l_sym)
+        if len(l_positions) > 1: # Has possible moves
+            return False
+        return True
+
+    def has_won(self,l_sym): #TODO
+        l2_sym = self.symbol_l[0]
+        if l_sym == l2_sym:
+            l2_sym = self.symbol_l[1]
+
+        l2_positions = self._find_available_l_pos(l2_sym)
+        if len(l2_positions) > 1: # L2 has possible moves
+            return False
+
+        return True
 
     def state_to_id(self,state=None):
         """
@@ -356,7 +373,14 @@ class Lgame:
 
         return is_l_shape
 
-    def _find_all_n_pos(self):
+    def _find_available_l_pos(self,l_sym): #TODO
+        l_positions = []
+        for pos in self.l_all_pos:
+            if self._squares_are_free(pos,l_sym):
+                l_positions.append(pos)
+        return l_positions
+
+    def _set_n_all_pos(self):
         """
         Find all possible positions for a neutral piece
         """
@@ -365,7 +389,7 @@ class Lgame:
             for j in range(self.y):
                 self.n_all_pos.append([i,j])
 
-    def _find_all_l_pos(self):
+    def _set_l_all_pos(self):
         """
         Find all possible positions for a player piece
         """

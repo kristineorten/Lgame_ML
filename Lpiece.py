@@ -68,13 +68,13 @@ class Lpiece(GamePiece):
                 else:
                     msgs += ", illegal N-move"
 
-            # TODO
-            if False: #won:
+            if self.get_game().has_won(self.to_symbol()):
                 reward = 100
                 termination = True
                 msgs = "Won"
-            elif False: #lost:
+            elif self.get_game().has_lost(self.to_symbol()):
                 reward = -100
+                termination = True
                 msgs = "Lost"
 
         # The state id after the moving is done
