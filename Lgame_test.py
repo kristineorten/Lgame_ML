@@ -152,4 +152,4 @@ def test_loss():
     assert termination == True
     assert msgs == "Lost"
 
-#TODO: what about rewards when we lose/win on l2's turn?
+#TODO: what about rewards when we lose/win on l2's turn? Manual fix?

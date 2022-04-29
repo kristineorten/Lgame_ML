@@ -380,6 +380,13 @@ class Lgame:
                 l_positions.append(pos)
         return l_positions
 
+    def _find_available_n_pos(self): #TODO
+        n_positions = []
+        for pos in self.n_all_pos:
+            if self._squares_are_free([pos]):
+                n_positions.append(pos)
+        return n_positions
+
     def _set_n_all_pos(self):
         """
         Find all possible positions for a neutral piece
