@@ -42,6 +42,66 @@ game.print_unicode()
 def increase_turn(turn):
     return (turn+1) % 2
 
+def find_next_states(game,current_state,l_all_pos,n_all_pos,symbol):
+    """
+    Params:
+        current_state (numpy.ndarray): state matrix
+        l_all_pos (list): all l positions (x,y-coordinates)
+        n_all_pos (list): all n positions (x,y-coordinates)
+        opponents_symbol (int)
+    """
+    next_states = []
+    
+    # Finding the position of the opponent and the neutral pieces
+    old_l_pos,_ = state_to_pos(current_state,symbol)
+
+
+    # Finding the position of the opponent and the neutral pieces
+    opponents_symbol = 1
+    if (symbol-1) == 0:
+        opponents_symbol = 2
+    l2_pos,old_n_pos = state_to_pos(current_state,opponents_symbol)
+    l2_pos = l2_pos.tolist()
+    old_n_pos = old_n_pos.tolist()
+
+    # Finding possible new positions for the L-piece
+    for l1_pos in l_all_pos:
+        if (str(l1_pos) != str(old_l_pos)):
+
+            legal_l_pos = True
+            for pos in l1_pos:
+                pos_str = str(pos)
+                if (pos_str in str(l2_pos)) or (pos_str in str(old_n_pos)):
+                    # The position is occupied
+                    legal_l_pos = False
+            if legal_l_pos:
+
+                # Finidng possible new positions for the neutral pieces
+                for n1_pos in n_all_pos:
+                    if (str(n1_pos) not in str(l1_pos)) and (str(n1_pos) not in str(l2_pos)):
+
+                        for n2_pos in n_all_pos:
+                            if (str(n2_pos) not in str(l1_pos)) and (str(n2_pos) not in str(l2_pos)):
+
+                                # One or both n's must be equal to old state
+                                if (n1_pos != n2_pos) and (str(n1_pos) in str(old_n_pos) or str(n2_pos) in str(old_n_pos)):
+
+                                    # Making the state
+                                    state = np.zeros(current_state.shape)
+                                    positions = [l1_pos,l2_pos,[n1_pos],[n2_pos]]
+
+                                    for i in range(len(positions)):
+                                        for pos in positions[i]:
+                                            pos_x,pos_y = pos
+                                            state[pos_x,pos_y] = min(i+1,len(positions)-1)
+
+                                    state_id = game.state_to_id(state) #TODO possible to remove?
+
+                                    # Adding to list
+                                    if (state_id not in next_states):
+                                        next_states.append(state_id)
+    return next_states
+
 # Initialize variables
 i = 0
 turn = 0
