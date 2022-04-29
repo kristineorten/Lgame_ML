@@ -1,10 +1,11 @@
 #import random
 import numpy as np
+from functions import id_to_state, state_to_pos
 #from Lpiece import Lpiece
 #from Npiece import Npiece
 #from Lgame import Lgame
 
-def policy_epsilon(state_id,all_state_ids,next_state_ids,Q,eps,symbol):
+def policy_epsilon(state_id,all_state_ids,next_state_ids,Q,eps,symbol,game):
     """ TODO
     Params:
 

@@ -3,6 +3,8 @@ import numpy as np
 from Lpiece import Lpiece
 from Npiece import Npiece
 from Lgame import Lgame
+from policies import policy_epsilon
+from functions import id_to_state, state_to_pos
 
 # Code for training the AI
 def increase_turn(turn):
@@ -69,37 +71,6 @@ def find_next_states(game,current_state,l_all_pos,n_all_pos,symbol):
                                         next_states.append(state_id)
     return next_states
 
-def id_to_state(state_id):
-    i = 0
-    state = np.zeros((4,4))
-    for x in range(state.shape[0]):
-        for y in range(state.shape[1]):
-            state[x][y] = state_id[i]
-            i += 1
-    return state
-
-def state_to_pos(state,l_symbol,n_symbol=None):
-    if n_symbol is None:
-        n_symbol = [3,4]
-
-    l_pos = np.zeros((4,2)).astype('int')
-    n_pos = np.zeros((len(n_symbol),2)).astype('int')
-
-    i,j = [0,0]
-    for x in range(state.shape[0]):
-        for y in range(state.shape[1]):
-            sq = np.array([x,y])
-
-            if state[x][y] == l_symbol:
-                l_pos[i] = sq
-                i += 1
-
-            elif (j < len(n_symbol)) and (state[x][y] == n_symbol[j]):
-                n_pos[j] = sq
-                j += 1
-
-    return l_pos,n_pos
-
 def find_random_l_move(game,symbol):
     possible_l_actions = np.array(game._find_available_l_pos(symbol)) #TODO change this
     l_index = random.randint(0, len(possible_l_actions)-1)
@@ -145,7 +116,7 @@ while(not termination and i < 5): #TODO
     print("Episode",i+1)
     # Player 1
     # Finding l-piece move and neutral move
-    l_action,n_action = policy_epsilon(state,all_state_ids,next_state_ids,Q,epsilon,turn+1)
+    l_action,n_action = policy_epsilon(state,all_state_ids,next_state_ids,Q,epsilon,turn+1,game)
 
     #print("l-action:",l_action)
     #print("n-action:",n_action) #n_pos = np.array([[3,3],[1,1]])

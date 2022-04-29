@@ -62,12 +62,14 @@ class Lpiece(GamePiece):
                     if actual_n_pos[0] == old_n_pos[0] and actual_n_pos[1] == old_n_pos[1]:
                         n_piece = n
 
-                if n_piece is None:
-                    print("Illegal n_move") #TODO håndter dette
+                if n_piece is not None:
+                    #TODO håndter dette?
 
-                moved_n_piece = n_piece.move(new_n_pos,remove_old_pos)
-                if moved_n_piece:
-                    msgs += ", N-piece moved"
+                    moved_n_piece = n_piece.move(new_n_pos,remove_old_pos)
+                    if moved_n_piece:
+                        msgs += ", N-piece moved"
+                    else:
+                        msgs += ", illegal N-move"
                 else:
                     msgs += ", illegal N-move"
 
