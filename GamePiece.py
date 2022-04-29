@@ -1,17 +1,18 @@
+import constants as const
+
 class GamePiece:
-    def __init__(self,id,game,symbol,position,unicode):
+    def __init__(self,id,game,symbol,position):
         """
         Params:
             id (int): id (relative to subclass)
             game (Lgame.Lgame): The game-object which the piece belongs to
             symbol (int): Symbol (0-9) for numeric representation
             position (numpy.ndarray): Squares occupied on the game board
-            unicode (string): Symbol for unicode representation
         """
         self.id = id
         self.symbol = symbol
         self.position = position
-        self.unicode = unicode
+        self.unicode = const.to_unicode(symbol) #Symbol for unicode representation
         self.game = game
 
     def get_id(self):

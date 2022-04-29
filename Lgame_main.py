@@ -4,41 +4,7 @@ from Lpiece import Lpiece
 from Npiece import Npiece
 from Lgame import Lgame
 
-# Test gameplay visuals
-print("Setting up the game")
-game = Lgame()
-player1, player2 = game.get_players()
-game.print_unicode()
-
-print("Attempting an illegal move")
-new_move = np.array([[1,0],[2,0],[3,0],[3,1]])
-print(player1.move(new_move))
-game.print_unicode()
-
-print("Moving the L-piece")
-new_move = np.array([[0,2],[1,2],[2,2],[2,3]])
-print(player1.move(new_move))
-game.print_unicode()
-
-print("Moving both the L- and N-pieces")
-new_move = np.array([[2,0],[3,0],[3,1],[3,2]])
-n_pos = np.array([[3,3],[1,1]])
-print(player2.move(new_move,n_pos))
-game.print_unicode()
-
-print("Illegal n-move")
-new_move = np.array([[0,3],[0,2],[1,2],[2,2]])
-n_pos = np.array([[0,0],[3,0]])
-print(player1.move(new_move,n_pos))
-game.print_unicode()
-
-print("Resetting the game")
-print(game.reset())
-game.print_unicode()
-
-
-# Training the AI
-
+# Code for training the AI
 def increase_turn(turn):
     return (turn+1) % 2
 
@@ -52,14 +18,15 @@ def find_next_states(game,current_state,l_all_pos,n_all_pos,symbol):
     """
     next_states = []
 
-    # Finding the position of the opponent and the neutral pieces
     old_l_pos,_ = state_to_pos(current_state,symbol)
 
-
     # Finding the position of the opponent and the neutral pieces
-    opponents_symbol = 1
-    if (symbol-1) == 0:
-        opponents_symbol = 2
+    opponents_symbol = 0
+    for sym in game.symbol_l:
+        if sym != symbol:
+            opponents_symbol = sym
+            break
+
     l2_pos,old_n_pos = state_to_pos(current_state,opponents_symbol)
     l2_pos = l2_pos.tolist()
     old_n_pos = old_n_pos.tolist()
@@ -133,72 +100,29 @@ def state_to_pos(state,l_symbol,n_symbol=None):
 
     return l_pos,n_pos
 
-def policy_epsilon(state_id,all_state_ids,next_state_ids,Q,eps,symbol):
-    nr_of_next_states = Q.shape[1]
-    prob_rd = eps/(nr_of_next_states-1)
-    probabilities = [prob_rd]*(nr_of_next_states-1)
-    probabilities.append(1-eps)
-    index = np.random.choice(nr_of_next_states, 1, p=probabilities)[0]
-    # numbers 0 to (n-2) with prob eps (eps/(n-1) per value)
-    # number (n-1) with prob (1-eps)
+def find_random_l_move(game,symbol):
+    possible_l_actions = np.array(game._find_available_l_pos(symbol)) #TODO change this
+    l_index = random.randint(0, len(possible_l_actions)-1)
+    l_action = possible_l_actions[l_index]
+    return l_action
 
-    state_id = state_id.replace("4","3")
-    old_state = id_to_state(state_id)
-
-    # Rotate state
-    while state_id not in all_state_ids: #TODO here
-        old_state = np.rotate90(old_state)
-        old_id = state_to_id(old_state)
-
-    index_max = np.argmax(Q[all_state_ids.index(state_id)])
-
-    # "Best" action
-    if index == (nr_of_next_states-1):
-        new_state_id = next_state_ids[index_max]
-
-    # Random action
-    else:
-        if index_max <= index:
-            index += 1
-        new_state_id = next_state_ids[index]
-
-    new_state = id_to_state(new_state_id)
-
-    print("old_state\n",old_state)
-    print("new_state\n",new_state)
-
-    _,old_n_pos = state_to_pos(old_state,symbol,[3,3])
-    l_action,new_n_pos = state_to_pos(new_state,symbol,[3,3])
-
-    old_n_pos = old_n_pos.tolist()
-    new_n_pos = new_n_pos.tolist()
-    n_action = np.zeros((2,2)).astype('int')
-
-    p1, p2 = new_n_pos
-    p1_old, p2_old = old_n_pos
-
-    #print("old n",old_n_pos)
-    #print("new n",new_n_pos)
-
-    if p1 == p1_old:
-        n_action[0] = p2_old
-        n_action[1] = p2
-    elif p1 == p2_old:
-        n_action[0] = p1_old
-        n_action[1] = p2
-
-    elif p2 == p1_old:
-        n_action[0] = p2_old
-        n_action[1] = p1
-    else: #p2 == p2_old:
-        n_action[0] = p1_old
-        n_action[1] = p1
-
-    return l_action,n_action
+def find_random_n_move(game):
+    possible_n_actions = np.array(game._find_available_n_pos()) #TODO change this bc _ should be private
+    n_index = random.randint(0, len(possible_n_actions)-1)
+    n_action = possible_n_actions[n_index]
+    return n_action
 
 # Initialize variables
+alpha = 0.1
+gamma = 0.9
+epsilon = 0.5
+
 i = 0
 turn = 0
+
+#Setting up the game
+game = Lgame()
+player1, player2 = game.get_players()
 state, reward, termination, msgs = game.reset()
 game.print_unicode() # For debug purposes
 
@@ -213,8 +137,12 @@ print(len(next_state_ids))
 # Initialize Q-table
 Q = np.random.rand(len(all_state_ids),len(next_state_ids))
 
+print("Q-table:") #TODO save Q-table to file and read from file?
+print(Q)
+
 # Note "states" is here state_ids
 while(not termination and i < 5): #TODO
+    print("Episode",i+1)
     # Player 1
     # Finding l-piece move and neutral move
     l_action,n_action = policy_epsilon(state,all_state_ids,next_state_ids,Q,epsilon,turn+1)
@@ -235,19 +163,18 @@ while(not termination and i < 5): #TODO
     turn = increase_turn(turn)
     next_state_ids = find_next_states(game,id_to_state(state),game.l_all_pos,game.n_all_pos,increase_turn(turn)+1)
 
+    print("Player 1 has moved")
+    game.print_unicode()
+
     # Player 2
     # Finding a random l-piece move
-    possible_l_actions = game._find_available_l_pos(player2.to_symbol()) #TODO change this
-    l_index = random.randint(0, len(possible_l_actions)-1)
-    l_action = possible_l_actions[l_index]
+    l_action = find_random_l_move(game,player2.to_symbol())
 
     # Move n 50% of the time
     n_action = None
     if random.choice([0, 1]):
         # Finding a neutral move
-        possible_n_actions = game._find_available_n_pos() #TODO change this bc _ should be private
-        n_index = random.randint(0, len(possible_n_actions)-1)
-        n_action = possible_n_actions[n_index]
+        n_action = find_random_n_move(game)
 
     new_state, reward, termination, msgs = player2.move(l_action,n_action)
 
@@ -258,6 +185,7 @@ while(not termination and i < 5): #TODO
         #Update Q_table with 100 because L1 won
         pass
 
+    print("Player 2 has moved")
     game.print_unicode()
     i += 1
     turn = increase_turn(turn)

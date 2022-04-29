@@ -1,13 +1,33 @@
 import numpy as np
+import constants as const
 from Lpiece import Lpiece
 from Npiece import Npiece
 
-class Lgame:
-    def __init__(self):
-        # Gameboard size
-        self.x = 4
-        self.y = 4
+class Square(): #TODO use this class
+    def __init__(self,x,y):
+        self.x = x
+        self.y = y
 
+    def __eq__(self,other):
+        return (self.x == other.x) and (self.y == other.y)
+
+    def __ne__(self,other):
+        return (self.x != other.x) or (self.y != other.y)
+
+    def __str__(self):
+        return '('+str(self.x)+','+str(self.y)+')'
+
+    def __hash__(self):
+        return hash(str(self))
+
+class Lgame():
+    def __init__(self):
+        # Gameboard size: May be possible to change in the future
+        self.height = 4
+        self.width = 4
+
+        self.termination = False
+        
         # Numeric representation of the pieces
         nr_of_n_pieces = 2
         self.symbol_empty_sq = 0
@@ -15,7 +35,7 @@ class Lgame:
         self.symbol_n = [3]*nr_of_n_pieces
 
         # Game state
-        self.state = np.zeros((self.x,self.y)).astype('int')
+        self.state = np.zeros((self.height,self.width)).astype('int')
 
         self._set_n_all_pos() #fills up self.n_all_pos
         self._set_l_all_pos() #fills up self.l_all_pos
@@ -33,8 +53,8 @@ class Lgame:
         self.l_pos_init = np.zeros([nr_of_n_pieces,l_pos_nr_of_sq,2]).astype('int')
         self.l_pos_init[0] = np.array([[0,1],[0,2],[1,2],[2,2]])
         self.l_pos_init[1] = np.array([[1,1],[2,1],[3,1],[3,2]])
-        self.l_pieces[0] = Lpiece(self,1,self.l_pos_init[0],"\u25A1")
-        self.l_pieces[1] = Lpiece(self,2,self.l_pos_init[1],"\u25A0")
+        self.l_pieces[0] = Lpiece(self,1,self.l_pos_init[0])
+        self.l_pieces[1] = Lpiece(self,2,self.l_pos_init[1])
 
     def __str__(self):
         """
@@ -140,7 +160,7 @@ class Lgame:
             msgs (str): Information about the action taken
         """
         # Resetting state to 0's
-        self.state = np.zeros((self.x,self.y))
+        self.state = np.zeros((self.height,self.width))
 
         # Placing player pieces
         for i in range(len(self.l_pieces)):
@@ -155,10 +175,14 @@ class Lgame:
 
         return state_id, 0, False, "Reset"
 
+
+    # Use check_termination(self) instead?
     def has_lost(self,l_sym): #TODO
         l_positions = self._find_available_l_pos(l_sym)
         if len(l_positions) > 1: # Has possible moves
             return False
+
+        self.termination = True
         return True
 
     def has_won(self,l_sym): #TODO
@@ -170,6 +194,7 @@ class Lgame:
         if len(l2_positions) > 1: # L2 has possible moves
             return False
 
+        self.termination = True
         return True
 
     def state_to_id(self,state=None):
@@ -188,8 +213,8 @@ class Lgame:
 
         # Converting to id-string
         state_id = ""
-        for x in range(self.x):
-            for y in range(self.y):
+        for x in range(self.height):
+            for y in range(self.width):
                 state_id += str(int(state[x][y]))
 
         return state_id
@@ -211,32 +236,19 @@ class Lgame:
         # Unicode symbols for the neutral pieces
         n_unicode = np.array([""]*len(self.n_pieces))
         for i in range(len(n_unicode)):
-            n_unicode[i] = self.n_pieces[i].to_unicode()#"\u272A"
+            n_unicode[i] = self.n_pieces[i].to_unicode()
 
         # Unicode symbols for the l-pieces (the L-shaped player pieces)
         l_unicode = np.array([""]*len(self.l_pieces))
         for i in range(len(l_unicode)):
-            l_unicode[i] = self.l_pieces[i].to_unicode()#"\u25A1", "\u25A0"
-
-        # Unicode symbol for an empty square
-        empty_sq = "\u00B7"
+            l_unicode[i] = self.l_pieces[i].to_unicode()
 
         # Converting the state
-        unicode_state = np.zeros((self.x,self.y)).astype('str')
-        for x in range(self.x):
-            for y in range(self.y):
-                symbol = state[x][y]
-                if symbol == self.symbol_l[0]:
-                    unicode_state[x][y] = l_unicode[0]
-                elif symbol == self.symbol_l[1]:
-                    unicode_state[x][y] = l_unicode[1]
-                elif symbol == self.symbol_n[0]:
-                    unicode_state[x][y] = n_unicode[0]
-                elif symbol == self.symbol_n[1]:
-                    unicode_state[x][y] = n_unicode[1]
-                else:
-                    unicode_state[x][y] = empty_sq
-
+        unicode_state = np.zeros((self.height,self.width)).astype('str')
+        for x in range(self.height):
+            for y in range(self.width):
+                symbol = int(state[x][y])
+                unicode_state[x][y] = const.to_unicode(symbol)
         return unicode_state
 
     def print_unicode(self,state=None):
@@ -249,14 +261,11 @@ class Lgame:
         # Converting state to unicode
         unicode_state = self.to_unicode(state)
 
-        # Unicode symbol for space (to get a less compact printing)
-        space = "\u0020"
-
         # Converting the unicode state to a string
         state_str = ""
-        for x in range(self.x):
-            for y in range(self.y):
-                state_str += unicode_state[x][y]+space
+        for x in range(self.height):
+            for y in range(self.width):
+                state_str += unicode_state[x][y]+" "
             state_str += "\n"
 
         # Printing the state
@@ -280,7 +289,7 @@ class Lgame:
             (bool): Whether the square is inside the game board or not
         """
 
-        if (x >= 0 and x < self.x) and (y >= 0 and y < self.y):
+        if (x >= 0 and x < self.height) and (y >= 0 and y < self.width):
             return True
         return False
 
@@ -392,8 +401,8 @@ class Lgame:
         Find all possible positions for a neutral piece
         """
         self.n_all_pos = []
-        for i in range(self.x):
-            for j in range(self.y):
+        for i in range(self.height):
+            for j in range(self.width):
                 self.n_all_pos.append([i,j])
 
     def _set_l_all_pos(self):
@@ -442,7 +451,7 @@ class Lgame:
                                 if (n1_pos != n2_pos) and (n2_pos not in l1_pos) and (n2_pos not in l2_pos):
 
                                     # Making the state
-                                    state = np.zeros((self.x,self.y))
+                                    state = np.zeros((self.height,self.width))
                                     positions = [l1_pos,l2_pos,[n1_pos],[n2_pos]]
                                     for i in range(len(positions)):
                                         for pos in positions[i]:

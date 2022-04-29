@@ -104,9 +104,9 @@ def test_win():
     move4_l1 = np.array([[1,0],[1,1],[1,2],[2,2]])
     move4_n = np.array([[1,3],[0,2]])
 
-    player2.move(move1_l2,move1_n)
+    state_id, reward, termination, msgs = player2.move(move1_l2,move1_n)
     state_id, reward, termination, msgs = player1.move(move2_l1)
-    player2.move(move3_l2,move3_n)
+    state_id, reward, termination, msgs = player2.move(move3_l2,move3_n)
     state_id, reward, termination, msgs = player1.move(move4_l1,move4_n)
 
     assert state_id == win_state_id
@@ -144,7 +144,7 @@ def test_loss():
     move3_n = np.array([[3,3],[2,3]])
 
     state_id, reward, termination, msgs = player1.move(move1_l1)
-    player2.move(move2_l2,move2_n)
+    state_id, reward, termination, msgs = player2.move(move2_l2,move2_n)
     state_id, reward, termination, msgs = player1.move(move3_l1,move3_n)
 
     assert state_id == loss_state_id

@@ -4,20 +4,19 @@ class Npiece(GamePiece):
     # Counting the number of N-pieces
     class_counter = 0
 
-    def __init__(self,game,symbol,position,unicode="\u272A"):
+    def __init__(self,game,symbol,position):
         """
         Params:
             game (Lgame.Lgame): The game-object which the piece belongs to
             symbol (int): Symbol (0-9) for numeric representation
             position (numpy.ndarray): Squares occupied on the game board
-            unicode (string): Symbol for unicode representation
         """
 
         # Setting the id of the piece
         id = Npiece.class_counter
         Npiece.class_counter += 1
 
-        super().__init__(id,game,symbol,position,unicode)
+        super().__init__(id,game,symbol,position)
 
         # Moving piece to initial position
         self.move(position,False)

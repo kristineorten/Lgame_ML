@@ -4,20 +4,19 @@ class Lpiece(GamePiece):
     # Counting the number of L-pieces
     class_counter = 0
 
-    def __init__(self,game,symbol,position,unicode):
+    def __init__(self,game,symbol,position):
         """
         Params:
             game (Lgame.Lgame): The game-object which the piece belongs to
             symbol (int): Symbol (0-9) for numeric representation
             position (numpy.ndarray): Squares occupied on the game board
-            unicode (string): Symbol for unicode representation
         """
 
         # Setting the id of the piece
         id = Lpiece.class_counter
         Lpiece.class_counter += 1
 
-        super().__init__(id,game,symbol,position,unicode)
+        super().__init__(id,game,symbol,position)
 
         # Moving piece to initial position
         self.move(position,None,False)
@@ -38,7 +37,7 @@ class Lpiece(GamePiece):
 
         # Default values
         reward = -1
-        termination = False
+        #termination = False
         msgs = "Illegal move"
 
         # Updating the game board
@@ -57,10 +56,14 @@ class Lpiece(GamePiece):
                 old_n_pos,new_n_pos = n_pos
 
                 # Finding the correct N-piece object
+                n_piece = None
                 for n in self.get_game().get_n_pieces():
                     actual_n_pos = n.get_pos()
                     if actual_n_pos[0] == old_n_pos[0] and actual_n_pos[1] == old_n_pos[1]:
                         n_piece = n
+
+                if n_piece is None:
+                    print("Illegal n_move") #TODO håndter dette
 
                 moved_n_piece = n_piece.move(new_n_pos,remove_old_pos)
                 if moved_n_piece:
@@ -70,14 +73,14 @@ class Lpiece(GamePiece):
 
             if self.get_game().has_won(self.to_symbol()):
                 reward = 100
-                termination = True
+                #termination = True
                 msgs = "Won"
             elif self.get_game().has_lost(self.to_symbol()):
                 reward = -100
-                termination = True
+                #termination = True
                 msgs = "Lost"
 
         # The state id after the moving is done
         state_id = self.get_game().state_to_id()
 
-        return state_id, reward, termination, msgs
+        return state_id, reward, self.get_game().termination, msgs
